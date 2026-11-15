@@ -2,7 +2,7 @@ import pygame
 from sprites import Jogador, Obstaculo
 from assets import load_assets
 import random
-from config import largura, altura , FPS, largura_carro, altura_carro, velocidade_carro, aceleracao_carro, DONE,PLAYING,EXPLODING
+from config import largura, altura , FPS, largura_carro, altura_carro, velocidade_carro, aceleracao_carro, DONE,PLAYING,EXPLODING, intervalo_tempo1,intervalo_tempo2
 #inicializacao do jogo 
 pygame.init()
 pygame.mixer.init()
@@ -28,9 +28,13 @@ obstaculos_sprites = pygame.sprite.Group()
 jogador = Jogador(assets)
 all_sprites.add(jogador)
 
-obstaculo = Obstaculo(assets)
-obstaculos_sprites.add(obstaculo)
-all_sprites.add(obstaculo)
+# controle de tempo para criar obstaculos
+ultimo_obstaculo = pygame.time.get_ticks()        # hora da última criação
+intervalo_obstaculo = intervalo_tempo1   # espera sorteada (em ms)
+
+
+
+keys_down = {}
 
 state = PLAYING
 while state != DONE:
@@ -38,6 +42,36 @@ while state != DONE:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             state = DONE
+
+
+        if state == PLAYING:
+            # Verifica se apertou alguma tecla.
+            if event.type == pygame.KEYDOWN:
+                # Dependendo da tecla, altera a velocidade.
+                keys_down[event.key] = True
+                if event.key == pygame.K_LEFT:
+                    jogador.speedx -= 8
+                if event.key == pygame.K_RIGHT:
+                    jogador.speedx += 8
+            # Verifica se soltou alguma tecla.
+            if event.type == pygame.KEYUP:
+                # Dependendo da tecla, altera a velocidade.
+                if event.key in keys_down and keys_down[event.key]:
+                    if event.key == pygame.K_LEFT:
+                        jogador.speedx += 8
+                    if event.key == pygame.K_RIGHT:
+                        jogador.speedx -= 8
+
+
+    #pega o momento de agr 
+    agora = pygame.time.get_ticks()
+    if agora - ultimo_obstaculo > intervalo_obstaculo:
+        #criacao do obsjeto obstaculo
+        obstaculo = Obstaculo(assets)
+        all_sprites.add(obstaculo)
+        obstaculos_sprites.add(obstaculo)
+        ultimo_obstaculo = agora                          # anota a hora desta criação
+        intervalo_obstaculo = random.randint(intervalo_tempo1, intervalo_tempo2)   # sorteia a próxima espera
 
     #atualiza todas as sprites
     all_sprites.update()

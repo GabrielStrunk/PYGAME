@@ -7,8 +7,11 @@ FPS = 30
 altura_carro = 80
 largura_carro = 50
 
-velocidade_carro = 20
+velocidade_carro = 5
 aceleracao_carro = 10
+
+intervalo_tempo1 = 800
+intervalo_tempo2 = 2000
 
 DONE = 0
 PLAYING = 1
