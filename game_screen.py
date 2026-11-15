@@ -5,9 +5,9 @@ from config import largura, FPS, velocidade_carro, DONE, PLAYING, EXPLODING, int
 
 
 def game_screen(window, assets, carro_escolhido):
-    # Tela do jogo. Roda ate o jogo acabar e devolve (return) a proxima tela:
-    #   OVER -> as vidas acabaram (vai para a tela de game over)
-    #   QUIT -> o jogador fechou a janela
+    # Tela do jogo. Roda ate o jogo acabar e devolve (return) DUAS coisas:
+    #   1) a proxima tela: OVER (as vidas acabaram) ou QUIT (fechou a janela)
+    #   2) o tempo da partida, em segundos (para a tela de game over e o recorde)
 
     #variavel para ajuste de velocidade
     clock = pygame.time.Clock()
@@ -30,6 +30,7 @@ def game_screen(window, assets, carro_escolhido):
     keys_down = {}
     vidas = vidas_iniciais   # comeca com 2 vidas
     inicio_jogo = pygame.time.get_ticks()   # hora em que o jogo comecou (para o contador de tempo)
+    tempo_partida = 0                       # segundos sobrevividos (para de contar quando as vidas acabam)
 
     proxima_tela = QUIT   # para onde ir quando o loop acabar
 
@@ -123,9 +124,11 @@ def game_screen(window, assets, carro_escolhido):
         all_sprites.draw(window)
 
         # ----- contador de tempo (em cima, no meio)
-        segundos_totais = (agora - inicio_jogo) // 1000   # ms -> segundos inteiros
-        minutos = segundos_totais // 60
-        segundos = segundos_totais % 60
+        # so conta enquanto ainda tem vida: na ultima explosao o tempo fica parado
+        if vidas > 0:
+            tempo_partida = (agora - inicio_jogo) // 1000   # ms -> segundos inteiros
+        minutos = tempo_partida // 60
+        segundos = tempo_partida % 60
         text_surface = assets["fonte"].render("{:02d}:{:02d}".format(minutos, segundos), True, AMARELO)
         text_rect = text_surface.get_rect()
         text_rect.midtop = (largura / 2, 10)
@@ -139,4 +142,4 @@ def game_screen(window, assets, carro_escolhido):
 
         pygame.display.update()
 
-    return proxima_tela
+    return proxima_tela, tempo_partida

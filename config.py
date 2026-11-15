@@ -25,6 +25,10 @@ vidas_iniciais = 2
 VERMELHO = (255, 0, 0)
 AMARELO = (255, 255, 0)
 BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+
+# arquivo onde o recorde (maior tempo, em segundos) fica salvo
+arquivo_recorde = 'recorde.txt'
 
 # os 3 carros que o jogador pode escolher na tela inicial (chaves do dicionario assets)
 # para trocar um carro, e so trocar o nome aqui
