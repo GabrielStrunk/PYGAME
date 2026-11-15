@@ -1,6 +1,7 @@
 import pygame 
-from sprites import Jogador
+from sprites import Jogador, Obstaculo
 from assets import load_assets
+import random
 from config import largura, altura , FPS, largura_carro, altura_carro, velocidade_carro, aceleracao_carro, DONE,PLAYING,EXPLODING
 #inicializacao do jogo 
 pygame.init()
@@ -22,9 +23,14 @@ assets = load_assets()
 clock = pygame.time.Clock()
 #criacao dos grupos de sprites
 all_sprites = pygame.sprite.Group()
+obstaculos_sprites = pygame.sprite.Group()
 #criacao do jogador
 jogador = Jogador(assets)
 all_sprites.add(jogador)
+
+obstaculo = Obstaculo(assets)
+obstaculos_sprites.add(obstaculo)
+all_sprites.add(obstaculo)
 
 state = PLAYING
 while state != DONE:
@@ -33,13 +39,17 @@ while state != DONE:
         if event.type == pygame.QUIT:
             state = DONE
 
+    #atualiza todas as sprites
+    all_sprites.update()
 
     #desenhando o fundo do jogo 
     window.blit(assets['fundo_com_pista'], (0, 0))
 
     #escrevendo/desenhando o jogador 
     all_sprites.draw(window)
-    #atualiza todas as sprites
-    all_sprites.update()
     pygame.display.update()
 
+
+
+
+pygame.quit()

@@ -19,3 +19,6 @@ EXPLODING = 2
 
 pista_esquerda = 152 
 pista_direita  = 550 
+
+
+largura_pista = (pista_direita - pista_esquerda)/5
