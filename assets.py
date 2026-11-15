@@ -22,10 +22,13 @@ def load_assets():
     explosion_anim = []
     for i in range(9):
         filename = 'assets/img/regularExplosion0{}.png'.format(i)
-        img = pygame.image.load(filename).convert()
+        img = pygame.image.load(filename).convert_alpha()
         img = pygame.transform.scale(img, (32, 32))
         explosion_anim.append(img)
     assets["explosion_anim"] = explosion_anim
+
+    # fonte para escrever o tempo e as vidas (a mesma do v18)
+    assets["fonte"] = pygame.font.Font('assets/font/PressStart2P.ttf', 28)
 
     # sons
     assets["boom_sound"] = pygame.mixer.Sound('assets/snd/expl3.wav')

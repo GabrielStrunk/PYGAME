@@ -24,7 +24,7 @@ class Jogador (pygame.sprite.Sprite):
 
 
 class Obstaculo (pygame.sprite.Sprite):
-    def __init__(self,assets):
+    def __init__(self,assets,velocidade):
         pygame.sprite.Sprite.__init__(self)
         # lista com as 4 imagens possiveis dos obstaculos
         lista_cores_carros = [assets["carro_amarelo"], assets["carro_branco"], assets["carro_roxo"], assets["carro_vermelho"]]
@@ -34,11 +34,49 @@ class Obstaculo (pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(pista_esquerda, pista_direita-largura_carro)
         self.rect.y = -altura_carro
-        self.speedy = velocidade_carro
+        self.speedy = velocidade   # recebe a velocidade atual do jogo
 
     def update(self):
         # Se o obstaculo passar fora da tela morre .
         self.rect.y += self.speedy
         if self.rect.top > altura:
             self.kill()
+
+
+# classe da explosao (mesma do v15): troca de imagem a cada frame_ticks ms
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, center, assets):
+        pygame.sprite.Sprite.__init__(self)
+
+        # lista com as imagens da animacao
+        self.explosion_anim = assets['explosion_anim']
+
+        # comeca na primeira imagem, no lugar indicado
+        self.frame = 0
+        self.image = self.explosion_anim[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+
+        # hora em que a imagem atual foi mostrada
+        self.last_update = pygame.time.get_ticks()
+        # quanto tempo cada imagem fica na tela (ms)
+        self.frame_ticks = 50
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        elapsed_ticks = now - self.last_update
+
+        # ja esta na hora de trocar de imagem?
+        if elapsed_ticks > self.frame_ticks:
+            self.last_update = now
+            self.frame += 1
+
+            # acabaram as imagens: a explosao some
+            if self.frame == len(self.explosion_anim):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = self.explosion_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
 

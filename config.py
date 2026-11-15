@@ -13,6 +13,18 @@ aceleracao_carro = 10
 intervalo_tempo1 = 800
 intervalo_tempo2 = 2000
 
+# dificuldade: a cada tempo_entre_aumentos ms o jogo fica mais dificil
+tempo_entre_aumentos = 5000   # de quanto em quanto tempo aumenta (ms)
+aumento_velocidade = 1        # quanto a velocidade dos obstaculos sobe a cada aumento
+reducao_intervalo = 100       # quanto o intervalo entre obstaculos diminui a cada aumento (ms)
+intervalo_minimo = 300        # o intervalo nunca fica menor que isso (ms)
+
+vidas_iniciais = 2
+
+# cores
+VERMELHO = (255, 0, 0)
+AMARELO = (255, 255, 0)
+
 DONE = 0
 PLAYING = 1
 EXPLODING = 2
