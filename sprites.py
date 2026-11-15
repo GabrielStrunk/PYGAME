@@ -3,9 +3,10 @@ import pygame
 import random
 #definicao da classe do carro do jogador 
 class Jogador (pygame.sprite.Sprite):
-    def __init__(self, assets):
+    def __init__(self, assets, carro_escolhido):
         pygame.sprite.Sprite.__init__(self)
-        self.image = assets["carro_jogador"]
+        # usa a imagem do carro que o jogador escolheu na tela inicial
+        self.image = assets[carro_escolhido]
         self.rect = self.image.get_rect()
         self.rect.centerx = largura / 2
         self.rect.bottom = altura - 10
@@ -24,10 +25,15 @@ class Jogador (pygame.sprite.Sprite):
 
 
 class Obstaculo (pygame.sprite.Sprite):
-    def __init__(self,assets,velocidade):
+    def __init__(self,assets,velocidade,carro_escolhido):
         pygame.sprite.Sprite.__init__(self)
-        # lista com as 4 imagens possiveis dos obstaculos
-        lista_cores_carros = [assets["carro_amarelo"], assets["carro_branco"], assets["carro_roxo"], assets["carro_vermelho"]]
+        # lista com as imagens possiveis dos obstaculos,
+        # SEM a cor que o jogador escolheu (para nao confundir com o proprio carro)
+        cores = ["carro_amarelo", "carro_branco", "carro_roxo", "carro_vermelho"]
+        lista_cores_carros = []
+        for cor in cores:
+            if cor != carro_escolhido:
+                lista_cores_carros.append(assets[cor])
         # sorteia uma das imagens da lista
         self.image = random.choice(lista_cores_carros)
         #get rect serve para pegar um "quadrado" com as posicoes 

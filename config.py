@@ -24,10 +24,22 @@ vidas_iniciais = 2
 # cores
 VERMELHO = (255, 0, 0)
 AMARELO = (255, 255, 0)
+BRANCO = (255, 255, 255)
 
+# os 3 carros que o jogador pode escolher na tela inicial (chaves do dicionario assets)
+# para trocar um carro, e so trocar o nome aqui
+carros_jogador = ["mustang", "ferrari", "carroca"]
+
+# estados DENTRO do jogo (usados no game_screen)
 DONE = 0
 PLAYING = 1
 EXPLODING = 2
+
+# estados das TELAS (usados no main.py, o gerente)
+INIT = 0
+GAME = 1
+OVER = 2
+QUIT = 3
 
 
 #definindo as dimensoes da pista em si 
