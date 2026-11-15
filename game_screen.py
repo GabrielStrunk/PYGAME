@@ -1,144 +1,143 @@
 import pygame
 import random
-from sprites import Jogador, Obstaculo, Explosion
-from config import largura, FPS, velocidade_carro, DONE, PLAYING, EXPLODING, intervalo_tempo1, intervalo_tempo2, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, VERMELHO, AMARELO, OVER, QUIT
+from sprites import Jogador, Obstaculo, Explosao
+from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
 
 
 def game_screen(window, assets, carro_escolhido):
     # Tela do jogo. Roda ate o jogo acabar e devolve (return) DUAS coisas:
-    #   1) a proxima tela: OVER (as vidas acabaram) ou QUIT (fechou a janela)
+    #   1) a proxima tela: TELA_FIM (as vidas acabaram) ou SAIR (fechou a janela)
     #   2) o tempo da partida, em segundos (para a tela de game over e o recorde)
 
     #variavel para ajuste de velocidade
     clock = pygame.time.Clock()
     #criacao dos grupos de sprites
-    all_sprites = pygame.sprite.Group()
-    obstaculos_sprites = pygame.sprite.Group()
+    grupo_todos = pygame.sprite.Group()
+    grupo_obstaculos = pygame.sprite.Group()
     #criacao do jogador
     jogador = Jogador(assets, carro_escolhido)
-    all_sprites.add(jogador)
+    grupo_todos.add(jogador)
 
     # controle de tempo para criar obstaculos
-    ultimo_obstaculo = pygame.time.get_ticks()        # hora da última criação
-    intervalo_obstaculo = intervalo_tempo1   # espera sorteada (em ms)
+    hora_ultimo_obstaculo = pygame.time.get_ticks()        # hora da última criação
+    espera_obstaculo = intervalo_inicial_menor   # espera sorteada (em ms)
 
     # controle da dificuldade (valores que MUDAM durante o jogo)
-    velocidade_atual = velocidade_carro          # comeca com a velocidade do config
+    velocidade_obstaculos = velocidade_inicial          # comeca com a velocidade do config
     reducao_total = 0                            # quanto o intervalo ja diminuiu no total
-    ultimo_aumento = pygame.time.get_ticks()     # hora do ultimo aumento de dificuldade
-
-    keys_down = {}
+    hora_ultimo_aumento = pygame.time.get_ticks()     # hora do ultimo aumento de dificuldade
+    #cria o dicionario key_down para exitar bug de morrer com o botao apertado 
+    teclas_apertadas = {}
     vidas = vidas_iniciais   # comeca com 2 vidas
-    inicio_jogo = pygame.time.get_ticks()   # hora em que o jogo comecou (para o contador de tempo)
+    hora_inicio = pygame.time.get_ticks()   # hora em que o jogo comecou (para o contador de tempo)
     tempo_partida = 0                       # segundos sobrevividos (para de contar quando as vidas acabam)
 
-    proxima_tela = QUIT   # para onde ir quando o loop acabar
+    proxima_tela = SAIR   # para onde ir quando o loop acabar
 
-    state = PLAYING
-    while state != DONE:
+    estado = JOGANDO
+    while estado != FIM:
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = DONE
-                proxima_tela = QUIT        # fechou a janela: sai do jogo
+                estado = FIM
+                proxima_tela = SAIR        # fechou a janela: sai do jogo
 
-            if state == PLAYING:
+            if estado == JOGANDO:
                 # Verifica se apertou alguma tecla.
                 if event.type == pygame.KEYDOWN:
                     # Dependendo da tecla, altera a velocidade.
-                    keys_down[event.key] = True
+                    teclas_apertadas[event.key] = True
                     if event.key == pygame.K_LEFT:
-                        jogador.speedx -= 8
+                        jogador.velocidade_x -= velocidade_jogador
                     if event.key == pygame.K_RIGHT:
-                        jogador.speedx += 8
+                        jogador.velocidade_x += velocidade_jogador
                 # Verifica se soltou alguma tecla.
                 if event.type == pygame.KEYUP:
                     # Dependendo da tecla, altera a velocidade.
-                    if event.key in keys_down and keys_down[event.key]:
+                    if event.key in teclas_apertadas and teclas_apertadas[event.key]:
                         if event.key == pygame.K_LEFT:
-                            jogador.speedx += 8
+                            jogador.velocidade_x += velocidade_jogador
                         if event.key == pygame.K_RIGHT:
-                            jogador.speedx -= 8
+                            jogador.velocidade_x -= velocidade_jogador
 
         #pega o momento de agr
         agora = pygame.time.get_ticks()
 
         # ----- aumenta a dificuldade de tempos em tempos
-        if agora - ultimo_aumento > tempo_entre_aumentos:
-            velocidade_atual += aumento_velocidade    # obstaculos descem mais rapido
+        if agora - hora_ultimo_aumento > tempo_entre_aumentos:
+            velocidade_obstaculos += aumento_velocidade    # obstaculos descem mais rapido
             reducao_total += reducao_intervalo        # obstaculos aparecem com mais frequencia
-            ultimo_aumento = agora                    # reinicia o cronometro
+            hora_ultimo_aumento = agora                    # reinicia o cronometro
 
         # ----- cria um novo obstaculo quando passar o intervalo
-        if agora - ultimo_obstaculo > intervalo_obstaculo:
+        if agora - hora_ultimo_obstaculo > espera_obstaculo:
             #criacao do obsjeto obstaculo
-            obstaculo = Obstaculo(assets, velocidade_atual, carro_escolhido)
-            all_sprites.add(obstaculo)
-            obstaculos_sprites.add(obstaculo)
-            ultimo_obstaculo = agora                          # anota a hora desta criação
+            obstaculo = Obstaculo(assets, velocidade_obstaculos)
+            grupo_todos.add(obstaculo)
+            grupo_obstaculos.add(obstaculo)
+            hora_ultimo_obstaculo = agora                          # anota a hora desta criação
 
             # sorteia a próxima espera, sem deixar ficar menor que o minimo
-            menor = intervalo_tempo1 - reducao_total
-            maior = intervalo_tempo2 - reducao_total
+            menor = intervalo_inicial_menor - reducao_total
+            maior = intervalo_inicial_maior - reducao_total
             if menor < intervalo_minimo:
                 menor = intervalo_minimo
             if maior < intervalo_minimo:
                 maior = intervalo_minimo
-            intervalo_obstaculo = random.randint(menor, maior)
+            espera_obstaculo = random.randint(menor, maior)
 
         #atualiza todas as sprites
-        all_sprites.update()
+        grupo_todos.update()
 
         # ----- colisao entre o jogador e os obstaculos
-        if state == PLAYING:
+        if estado == JOGANDO:
             # o True faz o obstaculo que bateu sumir
-            hits = pygame.sprite.spritecollide(jogador, obstaculos_sprites, True)
-            if len(hits) > 0:
-                assets['boom_sound'].play()
+            colisoes = pygame.sprite.spritecollide(jogador, grupo_obstaculos, True)
+            if len(colisoes) > 0:
+                assets['som_batida'].play()
                 jogador.kill()                 # o carro do jogador some
                 vidas -= 1                     # perde uma vida
                 # explosao no lugar onde o carro estava
-                explosao = Explosion(jogador.rect.center, assets)
-                all_sprites.add(explosao)
-                state = EXPLODING
-                keys_down = {}                 # evita o bug da tecla segurada (v17)
-                explosion_tick = pygame.time.get_ticks()
-                explosion_duration = explosao.frame_ticks * len(explosao.explosion_anim) + 400
+                explosao = Explosao(jogador.rect.center, assets)
+                grupo_todos.add(explosao)
+                estado = EXPLODINDO
+                teclas_apertadas = {}                 # evita o bug da tecla segurada (v17)
+                hora_explosao = pygame.time.get_ticks()
+                duracao_explosao = explosao.tempo_por_quadro * len(explosao.animacao_explosao) + 400
 
-        elif state == EXPLODING:
+        elif estado == EXPLODINDO:
             # espera a explosao terminar
-            now = pygame.time.get_ticks()
-            if now - explosion_tick > explosion_duration:
+            if agora - hora_explosao > duracao_explosao:
                 if vidas == 0:
-                    state = DONE               # acabaram as vidas: fim de jogo
-                    proxima_tela = OVER        # vai para a tela de game over
+                    estado = FIM               # acabaram as vidas: fim de jogo
+                    proxima_tela = TELA_FIM        # vai para a tela de game over
                 else:
-                    state = PLAYING            # ainda tem vida: carro novo
+                    estado = JOGANDO            # ainda tem vida: carro novo
                     jogador = Jogador(assets, carro_escolhido)
-                    all_sprites.add(jogador)
+                    grupo_todos.add(jogador)
 
         #desenhando o fundo do jogo
         window.blit(assets['fundo_com_pista'], (0, 0))
 
         #escrevendo/desenhando o jogador
-        all_sprites.draw(window)
+        grupo_todos.draw(window)
 
         # ----- contador de tempo (em cima, no meio)
         # so conta enquanto ainda tem vida: na ultima explosao o tempo fica parado
         if vidas > 0:
-            tempo_partida = (agora - inicio_jogo) // 1000   # ms -> segundos inteiros
+            tempo_partida = (agora - hora_inicio) // 1000   # ms -> segundos inteiros
         minutos = tempo_partida // 60
         segundos = tempo_partida % 60
-        text_surface = assets["fonte"].render("{:02d}:{:02d}".format(minutos, segundos), True, AMARELO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 10)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("{:02d}:{:02d}".format(minutos, segundos), True, AMARELO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 10)
+        window.blit(texto, texto_rect)
 
         # ----- contador de vidas (em cima, na esquerda)
-        text_surface = assets["fonte"].render(chr(9829) * vidas, True, VERMELHO)
-        text_rect = text_surface.get_rect()
-        text_rect.topleft = (10, 10)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render(chr(9829) * vidas, True, VERMELHO)
+        texto_rect = texto.get_rect()
+        texto_rect.topleft = (10, 10)
+        window.blit(texto, texto_rect)
 
         pygame.display.update()
 

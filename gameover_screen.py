@@ -1,6 +1,6 @@
 import pygame
 import os
-from config import largura, FPS, AMARELO, BRANCO, VERMELHO, PRETO, arquivo_recorde, GAME, QUIT
+from config import largura, FPS, AMARELO, BRANCO, VERMELHO, PRETO, arquivo_recorde, TELA_JOGO, SAIR
 
 
 def formatar_tempo(segundos_totais):
@@ -12,7 +12,7 @@ def formatar_tempo(segundos_totais):
 
 def gameover_screen(window, assets, tempo_partida):
     # Tela de game over: mostra o tempo e o recorde.
-    # ENTER -> joga de novo (GAME) | ESC -> sai (QUIT)
+    # ENTER -> joga de novo (TELA_JOGO) | ESC -> sai (SAIR)
     clock = pygame.time.Clock()
 
     # ----- le o recorde do arquivo (se ainda nao existe, o recorde e 0)
@@ -31,7 +31,7 @@ def gameover_screen(window, assets, tempo_partida):
         arquivo.close()
         novo_recorde = True
 
-    proxima_tela = QUIT
+    proxima_tela = SAIR
     running = True
     while running:
         clock.tick(FPS)
@@ -39,50 +39,50 @@ def gameover_screen(window, assets, tempo_partida):
         # ----- Trata eventos
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                proxima_tela = QUIT
+                proxima_tela = SAIR
                 running = False
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:     # ENTER
-                    proxima_tela = GAME
+                    proxima_tela = TELA_JOGO
                     running = False
                 if event.key == pygame.K_ESCAPE:     # ESC
-                    proxima_tela = QUIT
+                    proxima_tela = SAIR
                     running = False
 
         # ----- Gera saidas
         window.fill(PRETO)
 
-        text_surface = assets["fonte"].render("GAME OVER", True, VERMELHO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 200)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("GAME OVER", True, VERMELHO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 200)
+        window.blit(texto, texto_rect)
 
-        text_surface = assets["fonte"].render("SEU TEMPO: " + formatar_tempo(tempo_partida), True, BRANCO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 320)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("SEU TEMPO: " + formatar_tempo(tempo_partida), True, BRANCO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 320)
+        window.blit(texto, texto_rect)
 
-        text_surface = assets["fonte"].render("RECORDE: " + formatar_tempo(recorde), True, AMARELO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 390)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("RECORDE: " + formatar_tempo(recorde), True, AMARELO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 390)
+        window.blit(texto, texto_rect)
 
         if novo_recorde:
-            text_surface = assets["fonte"].render("NOVO RECORDE!", True, AMARELO)
-            text_rect = text_surface.get_rect()
-            text_rect.midtop = (largura / 2, 460)
-            window.blit(text_surface, text_rect)
+            texto = assets["fonte"].render("NOVO RECORDE!", True, AMARELO)
+            texto_rect = texto.get_rect()
+            texto_rect.midtop = (largura / 2, 460)
+            window.blit(texto, texto_rect)
 
-        text_surface = assets["fonte"].render("ENTER: JOGAR DE NOVO", True, BRANCO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 620)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("ENTER: JOGAR DE NOVO", True, BRANCO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 620)
+        window.blit(texto, texto_rect)
 
-        text_surface = assets["fonte"].render("ESC: SAIR", True, BRANCO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 690)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("ESC: SAIR", True, BRANCO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 690)
+        window.blit(texto, texto_rect)
 
         pygame.display.update()
 

@@ -7,11 +7,13 @@ FPS = 30
 altura_carro = 80
 largura_carro = 50
 
-velocidade_carro = 5
-aceleracao_carro = 10
+# velocidades (em pixels por frame)
+velocidade_inicial = 5       # velocidade com que os obstaculos comecam descendo
+velocidade_jogador = 8       # quanto o carro do jogador anda para o lado ao segurar a seta
 
-intervalo_tempo1 = 800
-intervalo_tempo2 = 2000
+# espera entre um obstaculo e outro no comeco do jogo: sorteada entre esses dois valores (ms)
+intervalo_inicial_menor = 800
+intervalo_inicial_maior = 2000
 
 # dificuldade: a cada tempo_entre_aumentos ms o jogo fica mais dificil
 tempo_entre_aumentos = 5000   # de quanto em quanto tempo aumenta (ms)
@@ -35,15 +37,15 @@ arquivo_recorde = 'recorde.txt'
 carros_jogador = ["mustang", "ferrari", "carroca"]
 
 # estados DENTRO do jogo (usados no game_screen)
-DONE = 0
-PLAYING = 1
-EXPLODING = 2
+FIM = 0
+JOGANDO = 1
+EXPLODINDO = 2
 
 # estados das TELAS (usados no main.py, o gerente)
-INIT = 0
-GAME = 1
-OVER = 2
-QUIT = 3
+TELA_INICIAL = 0
+TELA_JOGO = 1
+TELA_FIM = 2
+SAIR = 3
 
 
 #definindo as dimensoes da pista em si 
@@ -51,5 +53,3 @@ QUIT = 3
 pista_esquerda = 152 
 pista_direita  = 550 
 
-
-largura_pista = (pista_direita - pista_esquerda)/5

@@ -31,19 +31,19 @@ def load_assets():
     assets["fundo_inicio"] = pygame.transform.scale(assets["fundo_inicio"], (altura, altura))
 
     # animacao da explosao (9 imagens numeradas de 00 a 08)
-    explosion_anim = []
+    animacao_explosao = []
     for i in range(9):
         filename = 'assets/img/regularExplosion0{}.png'.format(i)
         img = pygame.image.load(filename).convert_alpha()
         img = pygame.transform.scale(img, (32, 32))
-        explosion_anim.append(img)
-    assets["explosion_anim"] = explosion_anim
+        animacao_explosao.append(img)
+    assets["animacao_explosao"] = animacao_explosao
 
     # fonte para escrever o tempo e as vidas (a mesma do v18)
     assets["fonte"] = pygame.font.Font('assets/font/PressStart2P.ttf', 28)
 
     # sons
-    assets["boom_sound"] = pygame.mixer.Sound('assets/snd/expl3.wav')
-    assets["destroy_sound"] = pygame.mixer.Sound('assets/snd/expl6.wav')
+    assets["som_batida"] = pygame.mixer.Sound('assets/snd/expl3.wav')
+    assets["som_destruicao"] = pygame.mixer.Sound('assets/snd/expl6.wav')
 
     return assets

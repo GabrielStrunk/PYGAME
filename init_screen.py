@@ -1,5 +1,5 @@
 import pygame
-from config import largura, altura, FPS, AMARELO, BRANCO, carros_jogador, GAME, QUIT
+from config import largura, altura, FPS, AMARELO, BRANCO, carros_jogador, TELA_JOGO, SAIR
 
 
 def init_screen(window, assets):
@@ -14,7 +14,7 @@ def init_screen(window, assets):
         img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
         imagens.append(img)
 
-    proxima_tela = QUIT
+    proxima_tela = SAIR
     carro_escolhido = carros_jogador[0]   # valor padrao, caso feche a janela
 
     running = True
@@ -24,22 +24,22 @@ def init_screen(window, assets):
         # ----- Trata eventos
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                proxima_tela = QUIT
+                proxima_tela = SAIR
                 running = False
 
             if event.type == pygame.KEYDOWN:
                 # cada tecla escolhe uma posicao da lista carros_jogador
                 if event.key == pygame.K_1:
                     carro_escolhido = carros_jogador[0]
-                    proxima_tela = GAME
+                    proxima_tela = TELA_JOGO
                     running = False
                 if event.key == pygame.K_2:
                     carro_escolhido = carros_jogador[1]
-                    proxima_tela = GAME
+                    proxima_tela = TELA_JOGO
                     running = False
                 if event.key == pygame.K_3:
                     carro_escolhido = carros_jogador[2]
-                    proxima_tela = GAME
+                    proxima_tela = TELA_JOGO
                     running = False
 
         # ----- Gera saidas
@@ -47,16 +47,16 @@ def init_screen(window, assets):
         window.blit(assets['fundo_inicio'], ((largura - altura) / 2, 0))
 
         # titulo
-        text_surface = assets["fonte"].render("CORRIDA", True, AMARELO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 120)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("CORRIDA", True, AMARELO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 120)
+        window.blit(texto, texto_rect)
 
         # instrucao
-        text_surface = assets["fonte"].render("ESCOLHA SEU CARRO", True, BRANCO)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (largura / 2, 220)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("ESCOLHA SEU CARRO", True, BRANCO)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (largura / 2, 220)
+        window.blit(texto, texto_rect)
 
         # os 3 carros lado a lado, com o numero embaixo de cada um
         for i in range(3):
@@ -65,16 +65,16 @@ def init_screen(window, assets):
             img_rect.center = (centro_x, altura / 2)
             window.blit(imagens[i], img_rect)
 
-            text_surface = assets["fonte"].render(str(i + 1), True, AMARELO)
-            text_rect = text_surface.get_rect()
-            text_rect.midtop = (centro_x, img_rect.bottom + 20)
-            window.blit(text_surface, text_rect)
+            texto = assets["fonte"].render(str(i + 1), True, AMARELO)
+            texto_rect = texto.get_rect()
+            texto_rect.midtop = (centro_x, img_rect.bottom + 20)
+            window.blit(texto, texto_rect)
 
         # dica embaixo
-        text_surface = assets["fonte"].render("APERTE 1, 2 OU 3", True, BRANCO)
-        text_rect = text_surface.get_rect()
-        text_rect.midbottom = (largura / 2, altura - 120)
-        window.blit(text_surface, text_rect)
+        texto = assets["fonte"].render("APERTE 1, 2 OU 3", True, BRANCO)
+        texto_rect = texto.get_rect()
+        texto_rect.midbottom = (largura / 2, altura - 120)
+        window.blit(texto, texto_rect)
 
         pygame.display.update()
 
