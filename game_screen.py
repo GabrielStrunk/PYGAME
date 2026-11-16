@@ -1,7 +1,7 @@
 import pygame
 import random
 from sprites import Jogador, Obstaculo, Explosao
-from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
+from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, tempo_invensibilidade, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
 
 
 def game_screen(window, assets, carro_escolhido):
@@ -33,8 +33,9 @@ def game_screen(window, assets, carro_escolhido):
     tempo_partida = 0                       # segundos sobrevividos (para de contar quando as vidas acabam)
 
     proxima_tela = SAIR   # para onde ir quando o loop acabar
-
+ 
     estado = JOGANDO
+    inicio = 0 
     while estado != FIM:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -92,8 +93,9 @@ def game_screen(window, assets, carro_escolhido):
         # ----- colisao entre o jogador e os obstaculos
         if estado == JOGANDO:
             # o True faz o obstaculo que bateu sumir
+
             colisoes = pygame.sprite.spritecollide(jogador, grupo_obstaculos, True)
-            if len(colisoes) > 0:
+            if len(colisoes) > 0 and (pygame.time.get_ticks() - inicio >= tempo_invensibilidade):
                 assets['som_batida'].play()
                 jogador.kill()                 # o carro do jogador some
                 vidas -= 1                     # perde uma vida
@@ -113,6 +115,7 @@ def game_screen(window, assets, carro_escolhido):
                     proxima_tela = TELA_FIM        # vai para a tela de game over
                 else:
                     estado = JOGANDO            # ainda tem vida: carro novo
+                    inicio = pygame.time.get_ticks()
                     jogador = Jogador(assets, carro_escolhido)
                     grupo_todos.add(jogador)
 

@@ -20,7 +20,7 @@ tempo_entre_aumentos = 5000   # de quanto em quanto tempo aumenta (ms)
 aumento_velocidade = 1        # quanto a velocidade dos obstaculos sobe a cada aumento
 reducao_intervalo = 100       # quanto o intervalo entre obstaculos diminui a cada aumento (ms)
 intervalo_minimo = 300        # o intervalo nunca fica menor que isso (ms)
-
+tempo_invensibilidade = 5000
 vidas_iniciais = 2
 
 # cores
