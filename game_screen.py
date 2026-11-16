@@ -52,6 +52,10 @@ def game_screen(window, assets, carro_escolhido):
                         jogador.velocidade_x -= velocidade_jogador
                     if event.key == pygame.K_RIGHT:
                         jogador.velocidade_x += velocidade_jogador
+                    if event.key == pygame.K_UP:
+                        jogador.velocidade_y -= velocidade_jogador
+                    if event.key == pygame.K_DOWN:
+                        jogador.velocidade_y += velocidade_jogador
                 # Verifica se soltou alguma tecla.
                 if event.type == pygame.KEYUP:
                     # Dependendo da tecla, altera a velocidade.
@@ -60,6 +64,10 @@ def game_screen(window, assets, carro_escolhido):
                             jogador.velocidade_x += velocidade_jogador
                         if event.key == pygame.K_RIGHT:
                             jogador.velocidade_x -= velocidade_jogador
+                        if event.key == pygame.K_UP:
+                            jogador.velocidade_y += velocidade_jogador
+                        if event.key == pygame.K_DOWN:
+                            jogador.velocidade_y -= velocidade_jogador
 
         #pega o momento de agr
         agora = pygame.time.get_ticks()

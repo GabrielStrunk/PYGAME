@@ -11,16 +11,26 @@ class Jogador (pygame.sprite.Sprite):
         self.rect.centerx = largura / 2
         self.rect.bottom = altura - 10
         self.velocidade_x = 0
+        self.velocidade_y= 0
 
 
     def update(self):
         # Atualização da posição do carro 
         self.rect.x += self.velocidade_x
+        self.rect.y += self.velocidade_y
         # Mantem dentro da pista
         if self.rect.right > pista_direita:
             self.rect.right = pista_direita
         if self.rect.left < pista_esquerda:
             self.rect.left = pista_esquerda
+
+        #mantem o carro dentro da pista em relacoa a aultura 
+        if self.rect.bottom > altura:
+            self.rect.bottom = altura
+        if self.rect.top < 0 :
+            self.rect.top = 0 
+
+
         
 
 
