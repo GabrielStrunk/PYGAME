@@ -1,4 +1,4 @@
-from config import largura,altura,largura_carro,altura_carro, pista_esquerda, pista_direita
+from config import largura,altura,largura_carro,altura_carro, pista_esquerda, pista_direita, tempo_efeito, tremida_oleo, largura_item, altura_item
 import pygame
 import random
 #definicao da classe do carro do jogador 
@@ -13,11 +13,37 @@ class Jogador (pygame.sprite.Sprite):
         self.velocidade_x = 0
         self.velocidade_y= 0
 
+        # efeito do item que o carro pegou: "" (nenhum), "oleo", "lama" ou "turbo"
+        self.efeito = ""
+        self.hora_efeito = 0      # hora em que pegou o item (ms)
+
+    def pegar_item (self, tipo):
+        self.efeito = tipo
+        self.hora_efeito = pygame.time.get_ticks()
+
 
     def update(self):
-        # Atualização da posição do carro 
-        self.rect.x += self.velocidade_x
-        self.rect.y += self.velocidade_y
+        # ----- o efeito acabou? (mesma ideia do tempo da explosao e do tiro da navinha)
+        agora = pygame.time.get_ticks()
+        if self.efeito != "" and agora - self.hora_efeito > tempo_efeito:
+            self.efeito = ""
+
+        # Atualização da posição do carro, dependendo do efeito
+        if self.efeito == "lama":
+            # na lama o carro anda pela metade
+            self.rect.x += self.velocidade_x // 2
+            self.rect.y += self.velocidade_y // 2
+        elif self.efeito == "turbo":
+            # no turbo o carro anda o dobro (fica dificil de controlar)
+            self.rect.x += self.velocidade_x * 2
+            self.rect.y += self.velocidade_y * 2
+        else:
+            self.rect.x += self.velocidade_x
+            self.rect.y += self.velocidade_y
+
+        if self.efeito == "oleo":
+            self.rect.x += random.randint(-tremida_oleo, tremida_oleo)
+
         # Mantem dentro da pista
         if self.rect.right > pista_direita:
             self.rect.right = pista_direita
@@ -90,4 +116,23 @@ class Explosao(pygame.sprite.Sprite):
                 self.image = self.animacao_explosao[self.quadro]
                 self.rect = self.image.get_rect()
                 self.rect.center = centro
+
+    # item que fica no chao da pista (oleo, lama ou turbo) - funciona igual ao Obstaculo: nasce em cima e desce junto com a pista
+class Item (pygame.sprite.Sprite):
+    def __init__(self, assets, velocidade):
+        pygame.sprite.Sprite.__init__(self)
+
+        # sorteia o tipo do item; o tipo e tambem a chave da imagem no assets
+        self.tipo = random.choice(["oleo", "lama", "turbo"])
+        self.image = assets[self.tipo]
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(pista_esquerda, pista_direita - largura_item)
+        self.rect.y = -altura_item
+        self.velocidade_y = velocidade
+
+    def update(self):
+        self.rect.y += self.velocidade_y
+        # passou do fim da tela: some
+        if self.rect.top > altura:
+            self.kill()
 

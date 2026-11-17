@@ -53,3 +53,13 @@ SAIR = 3
 pista_esquerda = 152 
 pista_direita  = 550 
 
+
+# itens da pista (oleo, lama e turbo)
+# espera entre um item e outro: sorteada entre esses dois valores (ms)
+intervalo_item_menor = 3000
+intervalo_item_maior = 6000
+tempo_efeito = 3000           # quanto tempo o efeito dura depois de passar no item (ms)
+tremida_oleo = 6              # no oleo o carro anda sozinho ate essa quantidade de pixels para cada lado
+largura_item = 60
+altura_item = 40
+

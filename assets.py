@@ -1,5 +1,5 @@
 import pygame
-from config import largura, altura, altura_carro,largura_carro
+from config import largura, altura, altura_carro,largura_carro, largura_item, altura_item
 
 
 def load_assets():
@@ -45,5 +45,13 @@ def load_assets():
     # sons
     assets["som_batida"] = pygame.mixer.Sound('assets/snd/expl3.wav')
     assets["som_destruicao"] = pygame.mixer.Sound('assets/snd/expl6.wav')
+
+    # itens da pista (poderzinho) (o nome da chave e o mesmo "tipo" usado na classe Item)
+    assets["oleo"] = pygame.image.load('assets/img/z_oleo.png').convert_alpha()
+    assets["oleo"] = pygame.transform.scale(assets["oleo"], (largura_item, altura_item))
+    assets["lama"] = pygame.image.load('assets/img/z_lama.png').convert_alpha()
+    assets["lama"] = pygame.transform.scale(assets["lama"], (largura_item, altura_item))
+    assets["turbo"] = pygame.image.load('assets/img/z_turbo.png').convert_alpha()
+    assets["turbo"] = pygame.transform.scale(assets["turbo"], (altura_item, altura_item))
 
     return assets

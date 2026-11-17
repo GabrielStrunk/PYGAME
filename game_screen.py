@@ -1,8 +1,8 @@
 import pygame
 import random
-from sprites import Jogador, Obstaculo, Explosao
+from sprites import Jogador, Obstaculo, Explosao, Item
 from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, tempo_invensibilidade, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
-
+from config import intervalo_item_menor, intervalo_item_maior, BRANCO
 
 def game_screen(window, assets, carro_escolhido):
     # Tela do jogo. Roda ate o jogo acabar e devolve (return) DUAS coisas:
@@ -14,6 +14,13 @@ def game_screen(window, assets, carro_escolhido):
     #criacao dos grupos de sprites
     grupo_todos = pygame.sprite.Group()
     grupo_obstaculos = pygame.sprite.Group()
+
+    # os itens ficam num grupo separado (fora do grupo_todos) para serem
+    # desenhados ANTES dos carros: assim o oleo fica embaixo do carro
+    grupo_itens = pygame.sprite.Group()
+    hora_ultimo_item = pygame.time.get_ticks()
+    espera_item = random.randint(intervalo_item_menor, intervalo_item_maior)
+
     #criacao do jogador
     jogador = Jogador(assets, carro_escolhido)
     grupo_todos.add(jogador)
@@ -95,9 +102,26 @@ def game_screen(window, assets, carro_escolhido):
                 maior = intervalo_minimo
             espera_obstaculo = random.randint(menor, maior)
 
+        # cria um novo item (oleo, lama ou turbo) quando passar o intervalo
+        if agora - hora_ultimo_item > espera_item:
+            # o item desce na mesma velocidade dos obstaculos (como se estivesse parado na pista)
+            item = Item(assets, velocidade_obstaculos)
+            grupo_itens.add(item)
+            hora_ultimo_item = agora
+            espera_item = random.randint(intervalo_item_menor, intervalo_item_maior)
+        
         #atualiza todas as sprites
         grupo_todos.update()
+        grupo_itens.update()
 
+         # se o o carro passar por cima de algum item
+        if estado == JOGANDO:
+            # o True faz o item sumir depois de pego
+            itens_pegos = pygame.sprite.spritecollide(jogador, grupo_itens, True)
+            for item in itens_pegos:
+                jogador.pegar_item(item.tipo)
+        
+    
         # ----- colisao entre o jogador e os obstaculos
         if estado == JOGANDO:
             # o True faz o obstaculo que bateu sumir
@@ -130,8 +154,18 @@ def game_screen(window, assets, carro_escolhido):
         #desenhando o fundo do jogo
         window.blit(assets['fundo_com_pista'], (0, 0))
 
+        # primeiro os itens (ficam no chao), depois os carros por cima
+        grupo_itens.draw(window)
+
         #escrevendo/desenhando o jogador
         grupo_todos.draw(window)
+
+        # mostra o efeito ativo (em cima, na direita)
+        if jogador.efeito != "":
+            texto = assets["fonte"].render(jogador.efeito.upper(), True, BRANCO)
+            texto_rect = texto.get_rect()
+            texto_rect.topright = (largura - 10, 10)
+            window.blit(texto, texto_rect)
 
         # ----- contador de tempo (em cima, no meio)
         # so conta enquanto ainda tem vida: na ultima explosao o tempo fica parado
