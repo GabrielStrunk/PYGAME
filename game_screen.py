@@ -50,6 +50,11 @@ def game_screen(window, assets, carro_escolhido):
                 estado = FIM
                 proxima_tela = SAIR        # fechou a janela: sai do jogo
 
+            # ESC: sai do jogo a qualquer momento (jogando ou explodindo)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                estado = FIM
+                proxima_tela = SAIR
+
             if estado == JOGANDO:
                 # Verifica se apertou alguma tecla.
                 if event.type == pygame.KEYDOWN:

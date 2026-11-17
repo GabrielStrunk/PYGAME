@@ -27,6 +27,11 @@ def init_screen(window, assets):
                 proxima_tela = SAIR
                 running = False
 
+             # ESC: sai do jogo
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                proxima_tela = SAIR
+                running = False
+                
             if event.type == pygame.KEYDOWN:
                 # cada tecla escolhe uma posicao da lista carros_jogador
                 if event.key == pygame.K_1:
