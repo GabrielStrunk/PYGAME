@@ -61,5 +61,5 @@ intervalo_item_maior = 6000
 tempo_efeito = 3000           # quanto tempo o efeito dura depois de passar no item (ms)
 tremida_oleo = 6              # no oleo o carro anda sozinho ate essa quantidade de pixels para cada lado
 largura_item = 60
-altura_item = 40
+altura_item = 60
 
