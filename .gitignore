@@ -1,0 +1,3 @@
+# arquivos que o Python cria sozinho ao rodar o jogo
+__pycache__/
+*.pyc
