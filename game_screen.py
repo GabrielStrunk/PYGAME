@@ -3,7 +3,7 @@ import random
 from sprites import Jogador, Obstaculo, Explosao, Item
 from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, tempo_invensibilidade, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
 from config import intervalo_item_menor, intervalo_item_maior, BRANCO
-from config import cenarios, intervalo_cenario, volume_musica
+from config import fundos_cenarios, musicas_cenarios, intervalo_cenario, volume_musica
 
 
 def game_screen(window, assets, carro_escolhido):
@@ -38,9 +38,8 @@ def game_screen(window, assets, carro_escolhido):
 
     # Cada nova partida comeca no fundo normal com Frozen Jam.
     cenario_atual = 0
-    chave_fundo, caminho_musica = cenarios[cenario_atual]
-    fundo_atual = assets[chave_fundo]
-    pygame.mixer.music.load(caminho_musica)
+    fundo_atual = assets[fundos_cenarios[cenario_atual]]
+    pygame.mixer.music.load(musicas_cenarios[cenario_atual])
     pygame.mixer.music.set_volume(volume_musica)
     pygame.mixer.music.play(loops=-1)
 
@@ -84,8 +83,7 @@ def game_screen(window, assets, carro_escolhido):
                         if event.key == pygame.K_DOWN:
                             jogador.velocidade_y -= velocidade_jogador
 
-        if estado == FIM:
-            break
+        
 
         agora = pygame.time.get_ticks()
 
@@ -93,14 +91,13 @@ def game_screen(window, assets, carro_escolhido):
         # Depois do inferno, volta ao normal e repete a sequencia.
         # Na ultima explosao, mantem o cenario, assim como o contador.
         if vidas > 0:
-            novo_cenario = ((agora - hora_inicio) // intervalo_cenario) % len(cenarios)
+            novo_cenario = ((agora - hora_inicio) // intervalo_cenario) % len(fundos_cenarios)
 
             # So carrega a musica quando o cenario realmente muda.
             if novo_cenario != cenario_atual:
                 cenario_atual = novo_cenario
-                chave_fundo, caminho_musica = cenarios[cenario_atual]
-                fundo_atual = assets[chave_fundo]
-                pygame.mixer.music.load(caminho_musica)
+                fundo_atual = assets[fundos_cenarios[cenario_atual]]
+                pygame.mixer.music.load(musicas_cenarios[cenario_atual])
                 pygame.mixer.music.set_volume(volume_musica)
                 pygame.mixer.music.play(loops=-1)
 
@@ -136,13 +133,15 @@ def game_screen(window, assets, carro_escolhido):
         grupo_itens.update()
 
         if estado == JOGANDO:
-            itens_pegos = pygame.sprite.spritecollide(jogador, grupo_itens, True)
+            # collide_mask: so conta quando o desenho do carro encosta no desenho do item
+            itens_pegos = pygame.sprite.spritecollide(jogador, grupo_itens, True, pygame.sprite.collide_mask)
             for item in itens_pegos:
                 jogador.pegar_item(item.tipo)
 
         # Colisao entre o jogador e os obstaculos.
         if estado == JOGANDO:
-            colisoes = pygame.sprite.spritecollide(jogador, grupo_obstaculos, True)
+            # collide_mask: so conta quando o desenho do carro encosta no desenho do obstaculo
+            colisoes = pygame.sprite.spritecollide(jogador, grupo_obstaculos, True, pygame.sprite.collide_mask)
             if len(colisoes) > 0 and (pygame.time.get_ticks() - inicio >= tempo_invensibilidade):
                 assets["som_batida"].play()
                 jogador.kill()

@@ -64,17 +64,5 @@ volume_musica = 0.4  # De 0.0 (sem som) a 1.0 (volume maximo).
 
 # Ordem dos cenarios: normal -> noite -> inferno -> normal.
 # Cada par contem a chave do fundo em assets e o caminho da musica.
-cenarios = [
-    (
-        "fundo_com_pista",
-        "assets/snd/tgfcoder-FrozenJam-SeamlessLoop.ogg",
-    ),
-    (
-        "fundo_com_pista_noite",
-        "assets/snd/audiofundonoite.mp3",
-    ),
-    (
-        "fundo_com_pista_inferno",
-        "assets/snd/audioinferno2.mp3",
-    ),
-]
+fundos_cenarios = ['fundo_com_pista', 'fundo_com_pista_noite', 'fundo_com_pista_inferno']
+musicas_cenarios = ['assets/snd/tgfcoder-FrozenJam-SeamlessLoop.ogg', 'assets/snd/audiofundonoite.mp3', 'assets/snd/audioinferno2.mp3']

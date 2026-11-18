@@ -7,6 +7,8 @@ class Jogador (pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # usa a imagem do carro que o jogador escolheu na tela inicial
         self.image = assets[carro_escolhido]
+        # mask: contorno da imagem, so com os pixels que nao sao transparentes
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.centerx = largura / 2
         self.rect.bottom = altura - 10
@@ -67,6 +69,8 @@ class Obstaculo (pygame.sprite.Sprite):
         cores = ["carro_amarelo", "carro_branco", "carro_roxo", "carro_vermelho"]
         # sorteia uma das imagens da lista a parti do nome da cor
         self.image = assets[random.choice(cores)]
+        # mask: contorno da imagem, so com os pixels que nao sao transparentes
+        self.mask = pygame.mask.from_surface(self.image)    
         #get rect serve para pegar um "quadrado" com as posicoes 
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(pista_esquerda, pista_direita-largura_carro)
@@ -125,6 +129,8 @@ class Item (pygame.sprite.Sprite):
         # sorteia o tipo do item; o tipo e tambem a chave da imagem no assets
         self.tipo = random.choice(["oleo", "lama", "turbo"])
         self.image = assets[self.tipo]
+        # mask: contorno da imagem, so com os pixels que nao sao transparentes
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(pista_esquerda, pista_direita - largura_item)
         self.rect.y = -altura_item
