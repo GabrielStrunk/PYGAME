@@ -1,0 +1,57 @@
+CORRIDA - ARQUIVOS INTEGRADOS
+
+COMO APLICAR
+1. Feche o jogo que estiver aberto.
+2. Coloque todos os sete arquivos .py deste pacote na mesma pasta do seu jogo.
+3. Mantenha sua pasta assets junto desses arquivos.
+4. Execute o main.py que veio neste pacote.
+
+ARQUIVOS DO CODIGO
+main.py
+assets.py
+config.py
+game_screen.py
+init_screen.py
+gameover_screen.py
+sprites.py
+
+O nome da tela de fim usado pelo main e gameover_screen.py, sem underscore
+entre game e over. Use o arquivo que acompanha este pacote.
+
+FUNDOS NECESSARIOS EM assets/img
+fundo_com_pista.png
+fundo_com_pista_noite.png
+fundo_com_pista_inferno.png
+
+MUSICAS NECESSARIAS EM assets/snd
+tgfcoder-FrozenJam-SeamlessLoop.ogg
+audiofundonoite.mp3
+audioinferno.mp3
+
+Os carros, os itens, as explosoes, a foto inicial, os efeitos de som e a fonte
+continuam sendo os arquivos da sua pasta assets. Este pacote contem somente
+o codigo e estas instrucoes; nao inclui esses arquivos de imagem e audio.
+
+COMO TESTAR
+Escolha o carro com 1, 2 ou 3. Na mesma partida, o contador e os cenarios seguem:
+00:00 - fundo normal e Frozen Jam
+00:30 - fundo da noite e audiofundonoite.mp3
+01:00 - fundo do inferno e audioinferno.mp3
+01:30 - volta ao fundo normal e Frozen Jam
+02:00 - noite novamente, repetindo a sequencia a cada 30 segundos
+
+A partida precisa continuar com vidas para chegar a cada troca. Ao jogar
+novamente apos GAME OVER, o contador e a sequencia recomecam do zero.
+
+O terminal mostra uma linha 'Cenario ...' ao iniciar a partida e a cada troca.
+Se alguma musica estiver ausente, o programa informa o caminho completo dela
+antes de comecar a partida, em vez de esperar chegar aos 30 segundos.
+
+COMO CONFIGURAR
+Em config.py:
+intervalo_cenario = 30_000 controla o intervalo em milissegundos.
+volume_musica = 0.4 controla o volume.
+cenarios define a ordem dos fundos e os arquivos de musica.
+
+Os caminhos sao calculados a partir da pasta do config.py. Assim, abrir o
+main.py por um editor ou a partir de outra pasta usa os mesmos assets.

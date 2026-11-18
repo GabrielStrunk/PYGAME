@@ -1,76 +1,96 @@
 import pygame
 import random
+from pathlib import Path
 from sprites import Jogador, Obstaculo, Explosao, Item
 from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, tempo_invensibilidade, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
 from config import intervalo_item_menor, intervalo_item_maior, BRANCO
+from config import cenarios, intervalo_cenario, volume_musica
+
 
 def game_screen(window, assets, carro_escolhido):
-    # Tela do jogo. Roda ate o jogo acabar e devolve (return) DUAS coisas:
-    #   1) a proxima tela: TELA_FIM (as vidas acabaram) ou SAIR (fechou a janela)
-    #   2) o tempo da partida, em segundos (para a tela de game over e o recorde)
-
-    #variavel para ajuste de velocidade
+    # Devolve a proxima tela e o tempo da partida, em segundos.
     clock = pygame.time.Clock()
-    #criacao dos grupos de sprites
+
+    # Confere todos os cenarios antes de comecar, inclusive os dos 30 e 60 s.
+    if not cenarios or intervalo_cenario <= 0:
+        raise ValueError("Configure os cenarios e um intervalo_cenario maior que zero.")
+    for chave_fundo, caminho_musica in cenarios:
+        if chave_fundo not in assets:
+            raise KeyError("Fundo nao carregado em assets.py: " + chave_fundo)
+        if not Path(caminho_musica).is_file():
+            raise FileNotFoundError("Musica do cenario nao encontrada: " + str(caminho_musica))
+
+    def ativar_cenario(indice):
+        chave_fundo, caminho_musica = cenarios[indice]
+        pygame.mixer.music.load(str(caminho_musica))
+        pygame.mixer.music.set_volume(volume_musica)
+        pygame.mixer.music.play(loops=-1)
+        print("Cenario {}/{}: {} | {}".format(
+            indice + 1, len(cenarios), chave_fundo, Path(caminho_musica).name
+        ), flush=True)
+        return assets[chave_fundo]
+
+    # Criacao dos grupos de sprites.
     grupo_todos = pygame.sprite.Group()
     grupo_obstaculos = pygame.sprite.Group()
 
-    # os itens ficam num grupo separado (fora do grupo_todos) para serem
-    # desenhados ANTES dos carros: assim o oleo fica embaixo do carro
+    # Os itens sao desenhados antes dos carros para ficarem no chao.
     grupo_itens = pygame.sprite.Group()
     hora_ultimo_item = pygame.time.get_ticks()
     espera_item = random.randint(intervalo_item_menor, intervalo_item_maior)
 
-    #criacao do jogador
     jogador = Jogador(assets, carro_escolhido)
     grupo_todos.add(jogador)
 
-    # controle de tempo para criar obstaculos
-    hora_ultimo_obstaculo = pygame.time.get_ticks()        # hora da última criação
-    espera_obstaculo = intervalo_inicial_menor   # espera sorteada (em ms)
+    # Controle de tempo para criar obstaculos.
+    hora_ultimo_obstaculo = pygame.time.get_ticks()
+    espera_obstaculo = intervalo_inicial_menor
 
-    # controle da dificuldade (valores que MUDAM durante o jogo)
-    velocidade_obstaculos = velocidade_inicial          # comeca com a velocidade do config
-    reducao_total = 0                            # quanto o intervalo ja diminuiu no total
-    hora_ultimo_aumento = pygame.time.get_ticks()     # hora do ultimo aumento de dificuldade
-    #cria o dicionario key_down para exitar bug de morrer com o botao apertado 
+    # Controle da dificuldade.
+    velocidade_obstaculos = velocidade_inicial
+    reducao_total = 0
+    hora_ultimo_aumento = pygame.time.get_ticks()
+
     teclas_apertadas = {}
-    vidas = vidas_iniciais   # comeca com 2 vidas
-    hora_inicio = pygame.time.get_ticks()   # hora em que o jogo comecou (para o contador de tempo)
-    tempo_partida = 0                       # segundos sobrevividos (para de contar quando as vidas acabam)
+    vidas = vidas_iniciais
+    tempo_partida = 0
+    proxima_tela = SAIR
 
-    proxima_tela = SAIR   # para onde ir quando o loop acabar
- 
+    # Cada nova partida comeca no fundo normal com Frozen Jam.
+    cenario_atual = 0
+    fundo_atual = ativar_cenario(cenario_atual)
+
+    # O mesmo relogio controla o contador da partida e os cenarios.
+    hora_inicio = pygame.time.get_ticks()
     estado = JOGANDO
-    inicio = 0 
+    inicio = 0
+
     while estado != FIM:
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 estado = FIM
-                proxima_tela = SAIR        # fechou a janela: sai do jogo
+                proxima_tela = SAIR
 
-            # ESC: sai do jogo a qualquer momento (jogando ou explodindo)
+            # ESC sai do jogo, inclusive durante uma explosao.
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 estado = FIM
                 proxima_tela = SAIR
 
             if estado == JOGANDO:
-                # Verifica se apertou alguma tecla.
                 if event.type == pygame.KEYDOWN:
-                    # Dependendo da tecla, altera a velocidade.
-                    teclas_apertadas[event.key] = True
-                    if event.key == pygame.K_LEFT:
-                        jogador.velocidade_x -= velocidade_jogador
-                    if event.key == pygame.K_RIGHT:
-                        jogador.velocidade_x += velocidade_jogador
-                    if event.key == pygame.K_UP:
-                        jogador.velocidade_y -= velocidade_jogador
-                    if event.key == pygame.K_DOWN:
-                        jogador.velocidade_y += velocidade_jogador
-                # Verifica se soltou alguma tecla.
+                    if not teclas_apertadas.get(event.key, False):
+                        teclas_apertadas[event.key] = True
+                        if event.key == pygame.K_LEFT:
+                            jogador.velocidade_x -= velocidade_jogador
+                        if event.key == pygame.K_RIGHT:
+                            jogador.velocidade_x += velocidade_jogador
+                        if event.key == pygame.K_UP:
+                            jogador.velocidade_y -= velocidade_jogador
+                        if event.key == pygame.K_DOWN:
+                            jogador.velocidade_y += velocidade_jogador
+
                 if event.type == pygame.KEYUP:
-                    # Dependendo da tecla, altera a velocidade.
                     if event.key in teclas_apertadas and teclas_apertadas[event.key]:
                         if event.key == pygame.K_LEFT:
                             jogador.velocidade_x += velocidade_jogador
@@ -80,25 +100,37 @@ def game_screen(window, assets, carro_escolhido):
                             jogador.velocidade_y += velocidade_jogador
                         if event.key == pygame.K_DOWN:
                             jogador.velocidade_y -= velocidade_jogador
+                        teclas_apertadas[event.key] = False
 
-        #pega o momento de agr
+        if estado == FIM:
+            break
+
         agora = pygame.time.get_ticks()
 
-        # ----- aumenta a dificuldade de tempos em tempos
-        if agora - hora_ultimo_aumento > tempo_entre_aumentos:
-            velocidade_obstaculos += aumento_velocidade    # obstaculos descem mais rapido
-            reducao_total += reducao_intervalo        # obstaculos aparecem com mais frequencia
-            hora_ultimo_aumento = agora                    # reinicia o cronometro
+        # Troca fundo e musica juntos no intervalo definido no config.
+        # Depois do inferno, volta ao normal e repete a sequencia.
+        # Na ultima explosao, mantem o cenario, assim como o contador.
+        if vidas > 0:
+            novo_cenario = ((agora - hora_inicio) // intervalo_cenario) % len(cenarios)
 
-        # ----- cria um novo obstaculo quando passar o intervalo
+            # So carrega a musica quando o cenario realmente muda.
+            if novo_cenario != cenario_atual:
+                fundo_atual = ativar_cenario(novo_cenario)
+                cenario_atual = novo_cenario
+
+        # Aumenta a dificuldade de tempos em tempos.
+        if agora - hora_ultimo_aumento > tempo_entre_aumentos:
+            velocidade_obstaculos += aumento_velocidade
+            reducao_total += reducao_intervalo
+            hora_ultimo_aumento = agora
+
+        # Cria um novo obstaculo quando passar o intervalo.
         if agora - hora_ultimo_obstaculo > espera_obstaculo:
-            #criacao do obsjeto obstaculo
             obstaculo = Obstaculo(assets, velocidade_obstaculos)
             grupo_todos.add(obstaculo)
             grupo_obstaculos.add(obstaculo)
-            hora_ultimo_obstaculo = agora                          # anota a hora desta criação
+            hora_ultimo_obstaculo = agora
 
-            # sorteia a próxima espera, sem deixar ficar menor que o minimo
             menor = intervalo_inicial_menor - reducao_total
             maior = intervalo_inicial_maior - reducao_total
             if menor < intervalo_minimo:
@@ -107,75 +139,63 @@ def game_screen(window, assets, carro_escolhido):
                 maior = intervalo_minimo
             espera_obstaculo = random.randint(menor, maior)
 
-        # cria um novo item (oleo, lama ou turbo) quando passar o intervalo
+        # Cria um novo item (oleo, lama ou turbo).
         if agora - hora_ultimo_item > espera_item:
-            # o item desce na mesma velocidade dos obstaculos (como se estivesse parado na pista)
             item = Item(assets, velocidade_obstaculos)
             grupo_itens.add(item)
             hora_ultimo_item = agora
             espera_item = random.randint(intervalo_item_menor, intervalo_item_maior)
-        
-        #atualiza todas as sprites
+
         grupo_todos.update()
         grupo_itens.update()
 
-         # se o o carro passar por cima de algum item
         if estado == JOGANDO:
-            # o True faz o item sumir depois de pego
             itens_pegos = pygame.sprite.spritecollide(jogador, grupo_itens, True)
             for item in itens_pegos:
                 jogador.pegar_item(item.tipo)
-        
-    
-        # ----- colisao entre o jogador e os obstaculos
-        if estado == JOGANDO:
-            # o True faz o obstaculo que bateu sumir
 
+        # Colisao entre o jogador e os obstaculos.
+        if estado == JOGANDO:
             colisoes = pygame.sprite.spritecollide(jogador, grupo_obstaculos, True)
             if len(colisoes) > 0 and (pygame.time.get_ticks() - inicio >= tempo_invensibilidade):
-                assets['som_batida'].play()
-                jogador.kill()                 # o carro do jogador some
-                vidas -= 1                     # perde uma vida
-                # explosao no lugar onde o carro estava
+                assets["som_batida"].play()
+                jogador.kill()
+                vidas -= 1
+
                 explosao = Explosao(jogador.rect.center, assets)
                 grupo_todos.add(explosao)
                 estado = EXPLODINDO
-                teclas_apertadas = {}                 # evita o bug da tecla segurada (v17)
+                teclas_apertadas = {}
                 hora_explosao = pygame.time.get_ticks()
                 duracao_explosao = explosao.tempo_por_quadro * len(explosao.animacao_explosao) + 400
 
         elif estado == EXPLODINDO:
-            # espera a explosao terminar
             if agora - hora_explosao > duracao_explosao:
                 if vidas == 0:
-                    estado = FIM               # acabaram as vidas: fim de jogo
-                    proxima_tela = TELA_FIM        # vai para a tela de game over
+                    estado = FIM
+                    proxima_tela = TELA_FIM
                 else:
-                    estado = JOGANDO            # ainda tem vida: carro novo
+                    estado = JOGANDO
                     inicio = pygame.time.get_ticks()
                     jogador = Jogador(assets, carro_escolhido)
                     grupo_todos.add(jogador)
 
-        #desenhando o fundo do jogo
-        window.blit(assets['fundo_com_pista'], (0, 0))
+        # Desenha o fundo do cenario atual.
+        window.blit(fundo_atual, (0, 0))
 
-        # primeiro os itens (ficam no chao), depois os carros por cima
+        # Primeiro os itens no chao, depois os carros por cima.
         grupo_itens.draw(window)
-
-        #escrevendo/desenhando o jogador
         grupo_todos.draw(window)
 
-        # mostra o efeito ativo (em cima, na direita)
         if jogador.efeito != "":
             texto = assets["fonte"].render(jogador.efeito.upper(), True, BRANCO)
             texto_rect = texto.get_rect()
             texto_rect.topright = (largura - 10, 10)
             window.blit(texto, texto_rect)
 
-        # ----- contador de tempo (em cima, no meio)
-        # so conta enquanto ainda tem vida: na ultima explosao o tempo fica parado
+        # Contador de tempo: para quando as vidas acabam.
         if vidas > 0:
-            tempo_partida = (agora - hora_inicio) // 1000   # ms -> segundos inteiros
+            tempo_partida = (agora - hora_inicio) // 1000
         minutos = tempo_partida // 60
         segundos = tempo_partida % 60
         texto = assets["fonte"].render("{:02d}:{:02d}".format(minutos, segundos), True, AMARELO)
@@ -183,7 +203,7 @@ def game_screen(window, assets, carro_escolhido):
         texto_rect.midtop = (largura / 2, 10)
         window.blit(texto, texto_rect)
 
-        # ----- contador de vidas (em cima, na esquerda)
+        # Contador de vidas.
         texto = assets["fonte"].render(chr(9829) * vidas, True, VERMELHO)
         texto_rect = texto.get_rect()
         texto_rect.topleft = (10, 10)
