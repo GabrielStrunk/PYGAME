@@ -1,6 +1,5 @@
 import pygame
 import random
-from pathlib import Path
 from sprites import Jogador, Obstaculo, Explosao, Item
 from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, tempo_invensibilidade, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
 from config import intervalo_item_menor, intervalo_item_maior, BRANCO
@@ -10,25 +9,6 @@ from config import cenarios, intervalo_cenario, volume_musica
 def game_screen(window, assets, carro_escolhido):
     # Devolve a proxima tela e o tempo da partida, em segundos.
     clock = pygame.time.Clock()
-
-    # Confere todos os cenarios antes de comecar, inclusive os dos 30 e 60 s.
-    if not cenarios or intervalo_cenario <= 0:
-        raise ValueError("Configure os cenarios e um intervalo_cenario maior que zero.")
-    for chave_fundo, caminho_musica in cenarios:
-        if chave_fundo not in assets:
-            raise KeyError("Fundo nao carregado em assets.py: " + chave_fundo)
-        if not Path(caminho_musica).is_file():
-            raise FileNotFoundError("Musica do cenario nao encontrada: " + str(caminho_musica))
-
-    def ativar_cenario(indice):
-        chave_fundo, caminho_musica = cenarios[indice]
-        pygame.mixer.music.load(str(caminho_musica))
-        pygame.mixer.music.set_volume(volume_musica)
-        pygame.mixer.music.play(loops=-1)
-        print("Cenario {}/{}: {} | {}".format(
-            indice + 1, len(cenarios), chave_fundo, Path(caminho_musica).name
-        ), flush=True)
-        return assets[chave_fundo]
 
     # Criacao dos grupos de sprites.
     grupo_todos = pygame.sprite.Group()
@@ -58,7 +38,11 @@ def game_screen(window, assets, carro_escolhido):
 
     # Cada nova partida comeca no fundo normal com Frozen Jam.
     cenario_atual = 0
-    fundo_atual = ativar_cenario(cenario_atual)
+    chave_fundo, caminho_musica = cenarios[cenario_atual]
+    fundo_atual = assets[chave_fundo]
+    pygame.mixer.music.load(caminho_musica)
+    pygame.mixer.music.set_volume(volume_musica)
+    pygame.mixer.music.play(loops=-1)
 
     # O mesmo relogio controla o contador da partida e os cenarios.
     hora_inicio = pygame.time.get_ticks()
@@ -79,16 +63,15 @@ def game_screen(window, assets, carro_escolhido):
 
             if estado == JOGANDO:
                 if event.type == pygame.KEYDOWN:
-                    if not teclas_apertadas.get(event.key, False):
-                        teclas_apertadas[event.key] = True
-                        if event.key == pygame.K_LEFT:
-                            jogador.velocidade_x -= velocidade_jogador
-                        if event.key == pygame.K_RIGHT:
-                            jogador.velocidade_x += velocidade_jogador
-                        if event.key == pygame.K_UP:
-                            jogador.velocidade_y -= velocidade_jogador
-                        if event.key == pygame.K_DOWN:
-                            jogador.velocidade_y += velocidade_jogador
+                    teclas_apertadas[event.key] = True
+                    if event.key == pygame.K_LEFT:
+                        jogador.velocidade_x -= velocidade_jogador
+                    if event.key == pygame.K_RIGHT:
+                        jogador.velocidade_x += velocidade_jogador
+                    if event.key == pygame.K_UP:
+                        jogador.velocidade_y -= velocidade_jogador
+                    if event.key == pygame.K_DOWN:
+                        jogador.velocidade_y += velocidade_jogador
 
                 if event.type == pygame.KEYUP:
                     if event.key in teclas_apertadas and teclas_apertadas[event.key]:
@@ -100,7 +83,6 @@ def game_screen(window, assets, carro_escolhido):
                             jogador.velocidade_y += velocidade_jogador
                         if event.key == pygame.K_DOWN:
                             jogador.velocidade_y -= velocidade_jogador
-                        teclas_apertadas[event.key] = False
 
         if estado == FIM:
             break
@@ -115,8 +97,12 @@ def game_screen(window, assets, carro_escolhido):
 
             # So carrega a musica quando o cenario realmente muda.
             if novo_cenario != cenario_atual:
-                fundo_atual = ativar_cenario(novo_cenario)
                 cenario_atual = novo_cenario
+                chave_fundo, caminho_musica = cenarios[cenario_atual]
+                fundo_atual = assets[chave_fundo]
+                pygame.mixer.music.load(caminho_musica)
+                pygame.mixer.music.set_volume(volume_musica)
+                pygame.mixer.music.play(loops=-1)
 
         # Aumenta a dificuldade de tempos em tempos.
         if agora - hora_ultimo_aumento > tempo_entre_aumentos:

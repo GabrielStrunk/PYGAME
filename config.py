@@ -1,10 +1,3 @@
-from pathlib import Path
-
-
-# Caminhos sempre relativos a esta pasta, mesmo abrindo o jogo por outro lugar.
-base_dir = Path(__file__).resolve().parent
-pasta_assets = base_dir / "assets"
-
 # Dimensoes da janela e taxa de quadros.
 altura = 900
 largura = 700
@@ -37,7 +30,7 @@ BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
 
 # Arquivo do recorde, em segundos.
-arquivo_recorde = str(base_dir / "recorde.txt")
+arquivo_recorde = "recorde.txt"
 
 # Chaves dos carros no dicionario assets.
 carros_jogador = ["mustang", "ferrari", "carroca"]
@@ -66,7 +59,7 @@ largura_item = 60
 altura_item = 60
 
 # Troca de fundo e musica: 30.000 milissegundos = 30 segundos.
-intervalo_cenario = 30_000
+intervalo_cenario = 30000
 volume_musica = 0.4  # De 0.0 (sem som) a 1.0 (volume maximo).
 
 # Ordem dos cenarios: normal -> noite -> inferno -> normal.
@@ -74,14 +67,14 @@ volume_musica = 0.4  # De 0.0 (sem som) a 1.0 (volume maximo).
 cenarios = [
     (
         "fundo_com_pista",
-        str(pasta_assets / "snd" / "tgfcoder-FrozenJam-SeamlessLoop.ogg"),
+        "assets/snd/tgfcoder-FrozenJam-SeamlessLoop.ogg",
     ),
     (
         "fundo_com_pista_noite",
-        str(pasta_assets / "snd" / "audiofundonoite.mp3"),
+        "assets/snd/audiofundonoite.mp3",
     ),
     (
         "fundo_com_pista_inferno",
-        str(pasta_assets / "snd" / "audioinferno2.mp3"),
+        "assets/snd/audioinferno2.mp3",
     ),
 ]
