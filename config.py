@@ -30,6 +30,9 @@ AMARELO = (255, 255, 0)
 BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
 
+# O carro pisca enquanto esta invencivel: troca de imagem a cada tempo_piscar ms.
+tempo_piscar = 100
+
 # Arquivo do recorde, em segundos.
 arquivo_recorde = "recorde.txt"
 

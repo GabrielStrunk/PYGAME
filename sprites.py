@@ -1,5 +1,6 @@
 """Classes dos sprites do jogo: Jogador, Obstaculo, Explosao e Item."""
 from config import largura,altura,largura_carro,altura_carro, pista_esquerda, pista_direita, tempo_efeito, tremida_oleo, largura_item, altura_item
+from config import tempo_piscar
 import pygame
 import random
 #definicao da classe do carro do jogador
@@ -29,6 +30,13 @@ class Jogador (pygame.sprite.Sprite):
         # efeito do item que o carro pegou: "" (nenhum), "oleo", "lama" ou "turbo"
         self.efeito = ""
         self.hora_efeito = 0      # hora em que pegou o item (ms)
+
+        # Para piscar: guarda a imagem normal e uma copia meio transparente.
+        self.imagem_normal = self.image
+        self.imagem_fraca = self.image.copy()
+        self.imagem_fraca.set_alpha(90)   # 0 = invisivel, 255 = normal
+        # hora (ms) em que o carro para de piscar; 0 = nao pisca
+        self.hora_fim_piscar = 0
 
     def pegar_item (self, tipo):
         """Ativa o efeito do item pego ("oleo", "lama" ou "turbo") e marca a hora."""
@@ -70,6 +78,13 @@ class Jogador (pygame.sprite.Sprite):
             self.rect.bottom = altura
         if self.rect.top < 0 :
             self.rect.top = 0 
+
+        # Pisca enquanto esta invencivel: a cada tempo_piscar ms alterna
+        # entre a imagem normal e a imagem fraca.
+        if agora < self.hora_fim_piscar and (agora // tempo_piscar) % 2 == 0:
+            self.image = self.imagem_fraca
+        else:
+            self.image = self.imagem_normal
 
 
         

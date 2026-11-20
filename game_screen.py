@@ -175,6 +175,8 @@ def game_screen(window, assets, carro_escolhido):
                     estado = JOGANDO
                     inicio = pygame.time.get_ticks()
                     jogador = Jogador(assets, carro_escolhido)
+                    # pisca enquanto esta invencivel
+                    jogador.hora_fim_piscar = inicio + tempo_invensibilidade
                     grupo_todos.add(jogador)
 
         # Desenha o fundo do cenario atual.
