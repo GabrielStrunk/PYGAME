@@ -1,12 +1,12 @@
 """Tela inicial do jogo, onde o jogador escolhe o carro."""
 import pygame
-from config import largura, altura, FPS, AMARELO, BRANCO, carros_jogador, TELA_JOGO, SAIR
+from config import largura, altura, FPS, AMARELO, BRANCO, carros_jogador, TELA_INSTRUCOES, SAIR
 
 
 def init_screen(window, assets):
     """Mostra os 3 carros e espera o jogador apertar 1, 2 ou 3.
 
-    Devolve a proxima tela (TELA_JOGO ou SAIR) e a chave do carro escolhido.
+    Devolve a proxima tela (TELA_INSTRUCOES ou SAIR) e a chave do carro escolhido.
     """
     # Tela inicial: o jogador escolhe um dos 3 carros com as teclas 1, 2 ou 3.
     # Devolve DUAS coisas: a proxima tela e o carro escolhido.
@@ -41,15 +41,15 @@ def init_screen(window, assets):
                 # cada tecla escolhe uma posicao da lista carros_jogador
                 if event.key == pygame.K_1:
                     carro_escolhido = carros_jogador[0]
-                    proxima_tela = TELA_JOGO
+                    proxima_tela = TELA_INSTRUCOES
                     running = False
                 if event.key == pygame.K_2:
                     carro_escolhido = carros_jogador[1]
-                    proxima_tela = TELA_JOGO
+                    proxima_tela = TELA_INSTRUCOES
                     running = False
                 if event.key == pygame.K_3:
                     carro_escolhido = carros_jogador[2]
-                    proxima_tela = TELA_JOGO
+                    proxima_tela = TELA_INSTRUCOES
                     running = False
 
         # ----- Gera saidas

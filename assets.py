@@ -50,6 +50,8 @@ def load_assets():
 
     # fonte para escrever o tempo e as vidas (a mesma do v18)
     assets["fonte"] = pygame.font.Font('assets/font/PressStart2P.ttf', 28)
+    # fonte menor para os textos da tela de instrucoes
+    assets["fonte_pequena"] = pygame.font.Font('assets/font/PressStart2P.ttf', 16)
 
     # sons
     assets["som_batida"] = pygame.mixer.Sound('assets/snd/expl3.wav')

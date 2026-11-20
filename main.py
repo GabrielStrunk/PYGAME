@@ -7,7 +7,8 @@ from assets import load_assets
 from game_screen import game_screen
 from init_screen import init_screen
 from gameover_screen import gameover_screen
-from config import largura, altura, TELA_INICIAL, TELA_JOGO, TELA_FIM, SAIR, carros_jogador
+from instrucoes_screen import instrucoes_screen
+from config import largura, altura, TELA_INICIAL, TELA_INSTRUCOES, TELA_JOGO, TELA_FIM, SAIR, carros_jogador
 
 #inicializacao do jogo
 pygame.init()
@@ -35,6 +36,10 @@ while tela != SAIR:
     if tela == TELA_INICIAL:
         # a tela inicial devolve duas coisas: a proxima tela e o carro escolhido
         tela, carro_escolhido = init_screen(window, assets)
+
+    elif tela == TELA_INSTRUCOES:
+        # instrucoes: devolve TELA_JOGO (ENTER) ou SAIR (ESC)
+        tela = instrucoes_screen(window, assets)
 
     elif tela == TELA_JOGO:
         # o jogo devolve duas coisas: a proxima tela e o tempo que o jogador durou

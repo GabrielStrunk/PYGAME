@@ -49,6 +49,7 @@ TELA_INICIAL = 0
 TELA_JOGO = 1
 TELA_FIM = 2
 SAIR = 3
+TELA_INSTRUCOES = 4  # tela "como jogar", depois da escolha do carro
 
 # Limites da pista.
 pista_esquerda = 152
