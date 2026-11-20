@@ -1,9 +1,11 @@
+"""Tela de fim de jogo: mostra o tempo da partida e o recorde."""
 import pygame
 import os
 from config import largura, FPS, AMARELO, BRANCO, VERMELHO, PRETO, arquivo_recorde, TELA_JOGO, SAIR
 
 
 def formatar_tempo(segundos_totais):
+    """Transforma segundos em texto "mm:ss" (ex.: 83 -> "01:23")."""
     # transforma segundos em texto "mm:ss" (ex.: 83 -> "01:23")
     minutos = segundos_totais // 60
     segundos = segundos_totais % 60
@@ -11,6 +13,11 @@ def formatar_tempo(segundos_totais):
 
 
 def gameover_screen(window, assets, tempo_partida):
+    """Mostra o game over e salva o recorde se ele foi batido.
+
+    tempo_partida: tempo que o jogador durou, em segundos.
+    Devolve TELA_JOGO (ENTER, jogar de novo) ou SAIR (ESC).
+    """
     # Tela de game over: mostra o tempo e o recorde.
     # ENTER -> joga de novo (TELA_JOGO) | ESC -> sai (SAIR)
     clock = pygame.time.Clock()

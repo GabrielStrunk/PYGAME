@@ -1,3 +1,4 @@
+"""Constantes do jogo: tamanhos, velocidades, tempos, cores e estados."""
 # Dimensoes da janela e taxa de quadros.
 altura = 900
 largura = 700

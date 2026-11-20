@@ -1,8 +1,10 @@
+"""Carregamento das imagens, sons e fonte do jogo."""
 import pygame
 from config import largura, altura, altura_carro,largura_carro, largura_item, altura_item
 
 
 def load_assets():
+    """Carrega todos os arquivos uma vez so e devolve um dicionario com eles."""
     assets = {}
     #difinicao imagens e fazendo a devida escala
     # ----- os 3 carros do jogador (PNG com fundo transparente: convert_alpha mantem a transparencia)
@@ -51,11 +53,8 @@ def load_assets():
 
     # sons
     assets["som_batida"] = pygame.mixer.Sound('assets/snd/expl3.wav')
-    assets["som_destruicao"] = pygame.mixer.Sound('assets/snd/expl6.wav')
-
-    # musicas (trechos cortados)
-    assets["audioinferno"] = pygame.mixer.Sound('assets/snd/audioinferno.mp3')
-    assets["musica_numb"] = pygame.mixer.Sound('assets/snd/audiofundonoite.mp3')
+    # som tocado quando o carro pega um item (oleo, lama ou turbo)
+    assets["som_item"] = pygame.mixer.Sound('assets/snd/item.wav')
 
     # itens da pista (poderzinho) (o nome da chave e o mesmo "tipo" usado na classe Item)
     assets["oleo"] = pygame.image.load('assets/img/z_oleo.png').convert_alpha()

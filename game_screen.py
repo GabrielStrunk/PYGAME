@@ -1,12 +1,20 @@
+"""Tela da partida: o jogador desvia dos carros e pega itens na pista."""
 import pygame
 import random
 from sprites import Jogador, Obstaculo, Explosao, Item
 from config import largura, FPS, velocidade_inicial, FIM, JOGANDO, EXPLODINDO, intervalo_inicial_menor, tempo_invensibilidade, intervalo_inicial_maior, tempo_entre_aumentos, aumento_velocidade, reducao_intervalo, intervalo_minimo, vidas_iniciais, velocidade_jogador, VERMELHO, AMARELO, TELA_FIM, SAIR
 from config import intervalo_item_menor, intervalo_item_maior, BRANCO
 from config import fundos_cenarios, musicas_cenarios, intervalo_cenario, volume_musica
+from config import altura
 
 
 def game_screen(window, assets, carro_escolhido):
+    """Roda a partida ate as vidas acabarem ou o jogador apertar ESC.
+
+    Cria obstaculos e itens, aumenta a dificuldade com o tempo e troca
+    o fundo e a musica a cada intervalo_cenario.
+    Devolve a proxima tela (TELA_FIM ou SAIR) e o tempo da partida em segundos.
+    """
     # Devolve a proxima tela e o tempo da partida, em segundos.
     clock = pygame.time.Clock()
 
@@ -42,6 +50,9 @@ def game_screen(window, assets, carro_escolhido):
     pygame.mixer.music.load(musicas_cenarios[cenario_atual])
     pygame.mixer.music.set_volume(volume_musica)
     pygame.mixer.music.play(loops=-1)
+
+    # Posicao vertical do fundo. Ela aumenta a cada frame para a pista descer.
+    fundo_y = 0
 
     # O mesmo relogio controla o contador da partida e os cenarios.
     hora_inicio = pygame.time.get_ticks()
@@ -137,6 +148,7 @@ def game_screen(window, assets, carro_escolhido):
             itens_pegos = pygame.sprite.spritecollide(jogador, grupo_itens, True, pygame.sprite.collide_mask)
             for item in itens_pegos:
                 jogador.pegar_item(item.tipo)
+                assets["som_item"].play()  #  som ao pegar o item
 
         # Colisao entre o jogador e os obstaculos.
         if estado == JOGANDO:
@@ -166,7 +178,16 @@ def game_screen(window, assets, carro_escolhido):
                     grupo_todos.add(jogador)
 
         # Desenha o fundo do cenario atual.
-        window.blit(fundo_atual, (0, 0))
+        # Pista rolando: a pista desce na mesma velocidade dos itens no chao.
+        # Desenha duas copias do fundo, uma em cima da outra. Quando a de baixo
+        # sai inteira da tela, volta fundo_y para cima e o ciclo recomeca.
+        # Na ultima explosao (vidas == 0) a pista para, junto com o contador.
+        if vidas > 0:
+            fundo_y += velocidade_obstaculos
+            if fundo_y >= altura:
+                fundo_y -= altura
+        window.blit(fundo_atual, (0, fundo_y))
+        window.blit(fundo_atual, (0, fundo_y - altura))
 
         # Primeiro os itens no chao, depois os carros por cima.
         grupo_itens.draw(window)

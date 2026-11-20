@@ -1,3 +1,7 @@
+"""Arquivo principal: abre a janela e controla a troca entre as telas.
+
+Para jogar, rode: python main.py
+"""
 import pygame
 from assets import load_assets
 from game_screen import game_screen

@@ -1,8 +1,13 @@
+"""Tela inicial do jogo, onde o jogador escolhe o carro."""
 import pygame
 from config import largura, altura, FPS, AMARELO, BRANCO, carros_jogador, TELA_JOGO, SAIR
 
 
 def init_screen(window, assets):
+    """Mostra os 3 carros e espera o jogador apertar 1, 2 ou 3.
+
+    Devolve a proxima tela (TELA_JOGO ou SAIR) e a chave do carro escolhido.
+    """
     # Tela inicial: o jogador escolhe um dos 3 carros com as teclas 1, 2 ou 3.
     # Devolve DUAS coisas: a proxima tela e o carro escolhido.
     clock = pygame.time.Clock()
